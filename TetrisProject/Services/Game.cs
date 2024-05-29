@@ -134,7 +134,7 @@ namespace TetrisProject.Services
 
         public void MoveCurrentTetromino(Direction direction)
         {
-            if (!this.gameState.IsInitialized)
+            if (!gameState.IsInitialized)
             {
                 throw new InvalidOperationException("Game not initialized.");
             }
@@ -142,13 +142,22 @@ namespace TetrisProject.Services
             switch (direction)
             {
                 case Direction.Left:
-                    gameState.CurrentTetromino.MoveLeft();
+                    if (CanMoveLeft(gameState.CurrentTetromino))
+                    {
+                        gameState.CurrentTetromino.MoveLeft();
+                    }
                     break;
                 case Direction.Right:
-                    gameState.CurrentTetromino.MoveRight();
+                    if (CanMoveRight(gameState.CurrentTetromino))
+                    {
+                        gameState.CurrentTetromino.MoveRight();
+                    }
                     break;
                 case Direction.Down:
-                    gameState.CurrentTetromino.MoveDown();
+                    if (CanMoveDown(gameState.CurrentTetromino))
+                    {
+                        gameState.CurrentTetromino.MoveDown();
+                    }
                     break;
             }
         }
@@ -179,13 +188,23 @@ namespace TetrisProject.Services
             {
                 throw new InvalidOperationException("Game not initialized.");
             }
+
             try
             {
-                gameState.CurrentTetromino.HardDrop();
-            }
-            catch (NotImplementedException)
-            {
-                throw new InvalidOperationException("Hard drop operation is not implemented.");
+                gameState.CurrentTetromino.HardDrop(gameState.Board);
+                gameState.Board.AddTetromino(gameState.CurrentTetromino);
+                gameState.Board.ClearLines();
+                gameState.Score += 1;
+
+                if (IsGameOver())
+                {
+                    gameState.GameOver = true;
+                    return;
+                }
+
+                gameState.CurrentTetromino = gameState.NextTetromino;
+                gameState.NextTetromino = GenerateRandomTetromino();
+                gameState.Timer.Restart();
             }
             catch (Exception ex)
             {
@@ -214,7 +233,7 @@ namespace TetrisProject.Services
                 gameState.Board.ClearLines();
                 gameState.Score += 1;
 
-                if (IsGameOver() && gameState.Score == 10)
+                if (IsGameOver())
                 {
                     gameState.GameOver = true;
                     return;
@@ -229,29 +248,34 @@ namespace TetrisProject.Services
 
         public bool CanMoveDown(ITetromino tetromino)
         {
-            var testTetromino = new Tetromino(tetromino.Shape, tetromino.Next)
-            {
-                X = tetromino.X,
-                Y = tetromino.Y + 1
-            };
-
-            return !gameState.Board.CheckCollision(testTetromino);
+            return !gameState.Board.CheckCollision(tetromino, Direction.Down);
         }
+
+        public bool CanMoveLeft(ITetromino tetromino)
+        {
+            return !gameState.Board.CheckCollision(tetromino, Direction.Left);
+        }
+
+        public bool CanMoveRight(ITetromino tetromino)
+        {
+            return !gameState.Board.CheckCollision(tetromino, Direction.Right);
+        }
+
 
         public bool IsGameOver()
         {
-            foreach (var row in gameState.CurrentTetromino.Shape)
+            for (int row = 0; row < gameState.CurrentTetromino.Shape.Length; row++)
             {
-                for (int col = 0; col < row.Length; col++)
+                for (int col = 0; col < gameState.CurrentTetromino.Shape[row].Length; col++)
                 {
-                    if (row[col] != ' ' && row[col] != '\0')
+                    if (gameState.CurrentTetromino.Shape[row][col] != ' ' && gameState.CurrentTetromino.Shape[row][col] != '\0')
                     {
-                        int x = gameState.CurrentTetromino.X + col;
                         int y = gameState.CurrentTetromino.Y;
 
-                        if (y < 0 || gameState.Board.CheckCollision(gameState.CurrentTetromino))
+                        // Console.WriteLine("Valor de y : " + y);
+                        if (y <= 1)
                         {
-                            return true;
+                            return gameState.Board.CheckCollision(gameState.CurrentTetromino, Direction.None); ;
                         }
                     }
                 }

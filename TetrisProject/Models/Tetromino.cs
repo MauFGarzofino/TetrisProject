@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TetrisProject.Constants;
+using TetrisProject.Directions;
 using TetrisProject.Interfaces;
 
 namespace TetrisProject.Models
@@ -33,17 +34,20 @@ namespace TetrisProject.Models
 
         public void MoveLeft()
         {
-            X -= 1;
+            X -= 3;
         }
 
         public void MoveRight()
         {
-            X += 1;
+            X += 3;
         }
 
-        public void HardDrop()
+        public void HardDrop(IBoard board)
         {
-            throw new NotImplementedException();
+            while (!board.CheckCollision(this, Direction.Down))
+            {
+                MoveDown();
+            }
         }
 
         public void Rotate()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TetrisProject.Directions;
 
 namespace TetrisProject.Interfaces
 {
@@ -10,7 +11,7 @@ namespace TetrisProject.Interfaces
     {
         void AddTetromino(ITetromino tetromino);
 
-        bool CheckCollision(ITetromino tetromino);
+        bool CheckCollision(ITetromino tetromino, Direction direction);
 
         void ClearLines();
 

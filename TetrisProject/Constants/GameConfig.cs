@@ -13,13 +13,14 @@ namespace TetrisProject.Constants
         static GameConfig()
         {
             InitializeEmptyField();
+            CurrentTetronimoX = (emptyField[0].Length / 2) - 3;
         }
 
         private static void InitializeEmptyField()
         {
-            emptyField = new string[24];
+            emptyField = new string[42];
             emptyField[0] = "╭──────────────────────────────╮";
-            for (int i = 1; i < 23; i++)
+            for (int i = 1; i < 41; i++)
             {
                 emptyField[i] = "│                              │";
             }
@@ -105,11 +106,11 @@ namespace TetrisProject.Constants
         };
 
         public const int BorderSize = 1;
-        public const int CurrentTetronimoX = 13;
+        public static readonly int CurrentTetronimoX;
         public const int CurrentTetronimoY = 1;
         public const int ConsoleWidthMin = 44;
-        public const int ConsoleHeightMin = 22;
-        public const int BoardHeigth = 22;
+        public const int ConsoleHeightMin = 44;
+        public const int BoardHeigth = 40;
         public const int BoardWidht = 30;
 
         public const int BoardX = 2;

@@ -24,7 +24,7 @@ namespace TetrisProject.Interfaces
 
         void Rotate();
 
-        void HardDrop();
+        void HardDrop(IBoard board);
 
         string[] GetShape();
     }
